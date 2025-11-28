@@ -1,0 +1,80 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: mediguard-central-station
+  
+  # 数据源配置 (Druid)
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # url: jdbc:mysql://43.136.107.63:3306/mediguard?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    # username: root
+    # password: gogoMisrobot
+    url: jdbc:mysql://159.75.205.149:20008/mediguard?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: Sca@lyle777
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+
+  # Flyway 数据库版本管理配置
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    table: flyway_schema_history
+    encoding: UTF-8
+
+  # Jackson 日期格式化配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: always
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.mediguard.central.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl # 使用 Slf4j 输出日志
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置 (配合 logback-spring.xml 使用效果更佳，此处为基础配置)
+logging:
+  level:
+    root: INFO
+    com.mediguard.central: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: INFO
+  file:
+    name: logs/mediguard.log
+  logback:
+    rollingpolicy:
+      max-history: 30
+      file-name-pattern: logs/mediguard-%d{yyyy-MM-dd}.log
+
+# Knife4j 配置
+knife4j:
+  enable: true
+  setting:
+    language: zh-CN
