@@ -321,6 +321,53 @@
 { "code": 200, "message": "success", "data": null }
 ```
 
+### 3.6 获取所有科室列表
+**说明**: 获取系统定义的科室列表（Admin视图）。
+**URL**: `/admin/departments`
+**Method**: `GET`
+
+**Response Body**:
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+      { "id": "d1", "code": "ICU", "name": "重症医学科", "capacity": 20 },
+      { "id": "d2", "code": "OR", "name": "手术室", "capacity": 8 },
+      { "id": "d_new_01", "code": "CCU", "name": "心内监护室", "capacity": 16 }
+  ]
+}
+```
+
+### 3.7 新增科室
+**说明**: 创建一个新的监护科室，并初始化默认配置。
+**URL**: `/admin/departments`
+**Method**: `POST`
+
+**Request Body**:
+```json
+{
+  "code": "CCU",
+  "name": "心内监护室",
+  "capacity": 16
+}
+```
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": { "id": "d_new_123", "code": "CCU" } }
+```
+
+### 3.8 删除科室
+**说明**: 移除一个科室及其所有配置。
+**URL**: `/admin/departments/{code}`
+**Method**: `DELETE`
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": null }
+```
+
 ---
 
 ## 4. 患者与床位管理 (Patients)

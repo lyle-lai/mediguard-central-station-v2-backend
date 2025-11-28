@@ -81,6 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
                             dto.setId(dept.getId());
                             dto.setCode(dept.getCode());
                             dto.setName(dept.getName());
+                            dto.setCapacity(dept.getCapacity());
                             return dto;
                         })
                         .collect(Collectors.toList());

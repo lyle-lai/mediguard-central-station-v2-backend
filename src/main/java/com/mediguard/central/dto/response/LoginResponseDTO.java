@@ -34,5 +34,6 @@ public class LoginResponseDTO {
         private String id;
         private String code;
         private String name;
+        private Integer capacity;
     }
 }

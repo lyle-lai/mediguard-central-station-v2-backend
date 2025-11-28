@@ -228,4 +228,88 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
             thresholdConfigMapper.insert(entity);
         }
     }
+
+    @Override
+    public List<com.mediguard.central.dto.response.DepartmentResponseDTO> getAllDepartments() {
+        log.info("【科室管理】获取所有科室列表");
+
+        List<DepartmentEntity> departments = this.list();
+
+        return departments.stream()
+                .map(dept -> {
+                    com.mediguard.central.dto.response.DepartmentResponseDTO dto = new com.mediguard.central.dto.response.DepartmentResponseDTO();
+                    dto.setId(dept.getId());
+                    dto.setCode(dept.getCode());
+                    dto.setName(dept.getName());
+                    dto.setCapacity(dept.getCapacity());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public com.mediguard.central.dto.response.DepartmentResponseDTO createDepartment(
+            com.mediguard.central.dto.CreateDepartmentDTO dto) {
+        log.info("【科室管理】创建新科室，code={}, name={}", dto.getCode(), dto.getName());
+
+        // 检查科室代码是否已存在
+        DepartmentEntity existing = this.getOne(new LambdaQueryWrapper<DepartmentEntity>()
+                .eq(DepartmentEntity::getCode, dto.getCode()));
+
+        if (existing != null) {
+            throw new RuntimeException("科室代码已存在: " + dto.getCode());
+        }
+
+        // 创建新科室
+        DepartmentEntity department = new DepartmentEntity();
+        department.setCode(dto.getCode());
+        department.setName(dto.getName());
+        department.setCapacity(dto.getCapacity());
+
+        this.save(department);
+
+        // 返回创建结果
+        com.mediguard.central.dto.response.DepartmentResponseDTO response = new com.mediguard.central.dto.response.DepartmentResponseDTO();
+        response.setId(department.getId());
+        response.setCode(department.getCode());
+        response.setName(department.getName());
+        response.setCapacity(department.getCapacity());
+
+        log.info("【科室管理】科室创建成功，id={}", department.getId());
+        return response;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDepartment(String code) {
+        log.info("【科室管理】删除科室，code={}", code);
+
+        // 检查科室是否存在
+        DepartmentEntity department = this.getOne(new LambdaQueryWrapper<DepartmentEntity>()
+                .eq(DepartmentEntity::getCode, code));
+
+        if (department == null) {
+            throw new RuntimeException("科室不存在: " + code);
+        }
+
+        // 删除科室相关配置
+        waveformConfigMapper.delete(new LambdaQueryWrapper<DeviceWaveformConfigEntity>()
+                .eq(DeviceWaveformConfigEntity::getDepartmentCode, code));
+
+        parameterConfigMapper.delete(new LambdaQueryWrapper<DeviceParameterConfigEntity>()
+                .eq(DeviceParameterConfigEntity::getDepartmentCode, code));
+
+        thresholdConfigMapper.delete(new LambdaQueryWrapper<AlarmThresholdConfigEntity>()
+                .eq(AlarmThresholdConfigEntity::getDepartmentCode, code));
+
+        bedLabelConfigMapper.delete(new LambdaQueryWrapper<BedLabelConfigEntity>()
+                .eq(BedLabelConfigEntity::getDepartmentCode, code));
+
+        // 删除科室
+        this.remove(new LambdaQueryWrapper<DepartmentEntity>()
+                .eq(DepartmentEntity::getCode, code));
+
+        log.info("【科室管理】科室删除成功，code={}", code);
+    }
 }

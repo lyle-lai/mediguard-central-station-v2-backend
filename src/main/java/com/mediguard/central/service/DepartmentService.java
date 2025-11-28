@@ -45,4 +45,27 @@ public interface DepartmentService extends IService<DepartmentEntity> {
      * @param thresholds     阈值列表
      */
     void updateAlarmThresholds(String departmentCode, List<AlarmThresholdConfigDTO> thresholds);
+
+    /**
+     * 获取所有科室列表（Admin）
+     * 
+     * @return 科室列表
+     */
+    List<com.mediguard.central.dto.response.DepartmentResponseDTO> getAllDepartments();
+
+    /**
+     * 创建新科室（Admin）
+     * 
+     * @param dto 创建参数
+     * @return 创建的科室信息
+     */
+    com.mediguard.central.dto.response.DepartmentResponseDTO createDepartment(
+            com.mediguard.central.dto.CreateDepartmentDTO dto);
+
+    /**
+     * 删除科室（Admin）
+     * 
+     * @param code 科室代码
+     */
+    void deleteDepartment(String code);
 }
