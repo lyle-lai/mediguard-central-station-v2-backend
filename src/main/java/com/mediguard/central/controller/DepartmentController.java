@@ -3,7 +3,6 @@ package com.mediguard.central.controller;
 import com.mediguard.central.common.Result;
 import com.mediguard.central.dto.AlarmThresholdConfigDTO;
 import com.mediguard.central.dto.DepartmentCapacityDTO;
-import com.mediguard.central.dto.DeviceDisplayConfigDTO;
 import com.mediguard.central.dto.response.DepartmentConfigResponseDTO;
 import com.mediguard.central.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
@@ -43,13 +42,28 @@ public class DepartmentController {
     }
 
     /**
-     * 更新设备显示模板
+     * 更新设备波形配置
      */
-    @PutMapping("/{departmentCode}/device-configs")
-    public Result<Void> updateDeviceConfigs(@PathVariable String departmentCode,
-            @RequestBody List<DeviceDisplayConfigDTO> configs) {
-        log.info("【科室配置】接收到更新设备模板请求，科室={}", departmentCode);
-        departmentService.updateDeviceConfigs(departmentCode, configs);
+    @PutMapping("/{departmentCode}/device-configs/{deviceType}/waveforms")
+    public Result<Void> updateWaveformConfigs(
+            @PathVariable String departmentCode,
+            @PathVariable String deviceType,
+            @RequestBody List<com.mediguard.central.dto.WaveformConfigDTO> waveforms) {
+        log.info("【科室配置】接收到更新设备波形配置请求，科室={}，设备类型={}", departmentCode, deviceType);
+        departmentService.updateWaveformConfigs(departmentCode, deviceType, waveforms);
+        return Result.success();
+    }
+
+    /**
+     * 更新设备参数配置
+     */
+    @PutMapping("/{departmentCode}/device-configs/{deviceType}/parameters")
+    public Result<Void> updateParameterConfigs(
+            @PathVariable String departmentCode,
+            @PathVariable String deviceType,
+            @RequestBody List<com.mediguard.central.dto.ParameterConfigDTO> parameters) {
+        log.info("【科室配置】接收到更新设备参数配置请求，科室={}，设备类型={}", departmentCode, deviceType);
+        departmentService.updateParameterConfigs(departmentCode, deviceType, parameters);
         return Result.success();
     }
 

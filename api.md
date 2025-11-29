@@ -1,3 +1,4 @@
+
 # MediGuard CMS - API 接口文档 v3.5 (Complete)
 
 本文档基于前端代码 (`services/apiService.ts`, `types.ts`) 及最新重构逻辑整理，定义了前端与后端交互的完整契约。
@@ -48,9 +49,9 @@
       "name": "系统管理员",
       "role": "ADMIN",
       "departments": [
-        { "id": "d1", "code": "ICU", "name": "重症医学科" },
-        { "id": "d2", "code": "OR", "name": "手术室" },
-        { "id": "d3", "code": "ER", "name": "急诊科" }
+        { "id": "d1", "code": "ICU", "name": "重症医学科", "capacity": 20 },
+        { "id": "d2", "code": "OR", "name": "手术室", "capacity": 8 },
+        { "id": "d3", "code": "ER", "name": "急诊科", "capacity": 12 }
       ]
     }
   }
@@ -189,60 +190,22 @@
 { "code": 200, "message": "success", "data": null }
 ```
 
-### 3.4 更新设备显示模板
-**说明**: 配置该科室下各类设备的默认波形和参数显示顺序/颜色。
-**URL**: `/departments/{departmentCode}/device-configs`
+### 3.4 更新设备波形配置
+**说明**: 更新指定科室下某类设备的波形显示配置（颜色、顺序、可见性）。
+**URL**: `/departments/{departmentCode}/device-configs/{deviceType}/waveforms`
 **Method**: `PUT`
-**Path Params**: `departmentCode` (例如: `ICU`)
+**Path Params**: 
+* `departmentCode` (例如: `ICU`)
+* `deviceType` (例如: `MONITOR`, `VENTILATOR`)
 
-**Request Body** (`DeviceDisplayConfig`):
+**Request Body** (`WaveformConfig[]`):
 ```json
-{
-  "MONITOR": {
-    "waveforms": [
-       { "id": "ecg", "label": "ECG I", "visible": true, "color": "#00ff41", "order": 1 },
-       { "id": "spo2", "label": "SpO2", "visible": true, "color": "#00d0ff", "order": 2 },
-       { "id": "resp", "label": "Resp", "visible": true, "color": "#ffea00", "order": 3 },
-       { "id": "art", "label": "ART", "visible": false, "color": "#ff3b30", "order": 4 }
-    ],
-    "parameters": [
-       { "id": "hr", "label": "HR", "unit": "bpm", "visible": true, "order": 1 },
-       { "id": "spo2", "label": "SpO2", "unit": "%", "visible": true, "order": 2 },
-       { "id": "nibp", "label": "NIBP", "unit": "mmHg", "visible": true, "order": 3 },
-       { "id": "resp", "label": "RR", "unit": "rpm", "visible": true, "order": 4 },
-       { "id": "temp", "label": "Temp", "unit": "°C", "visible": true, "order": 5 }
-    ]
-  },
-  "VENTILATOR": {
-    "waveforms": [
-       { "id": "paw", "label": "Paw", "visible": true, "color": "#ff9500", "order": 1 },
-       { "id": "flow", "label": "Flow", "visible": true, "color": "#34d399", "order": 2 },
-       { "id": "vol", "label": "Volume", "visible": true, "color": "#00d0ff", "order": 3 }
-    ],
-    "parameters": [
-       { "id": "ppeak", "label": "Ppeak", "unit": "cmH2O", "visible": true, "order": 1 },
-       { "id": "vte", "label": "VTe", "unit": "ml", "visible": true, "order": 2 },
-       { "id": "mv", "label": "MV", "unit": "L/min", "visible": true, "order": 3 },
-       { "id": "fio2", "label": "FiO2", "unit": "%", "visible": true, "order": 4 },
-       { "id": "peep", "label": "PEEP", "unit": "cmH2O", "visible": true, "order": 5 },
-       { "id": "freq", "label": "fTotal", "unit": "bpm", "visible": true, "order": 6 }
-    ]
-  },
-  "ANESTHESIA": {
-     "waveforms": [
-        { "id": "co2", "label": "CO2", "visible": true, "color": "#ffffff", "order": 1 },
-        { "id": "ecg", "label": "ECG", "visible": true, "color": "#00ff41", "order": 2 },
-        { "id": "pleth", "label": "Pleth", "visible": true, "color": "#00d0ff", "order": 3 }
-     ],
-     "parameters": [
-        { "id": "etco2", "label": "EtCO2", "unit": "mmHg", "visible": true, "order": 1 },
-        { "id": "spo2", "label": "SpO2", "unit": "%", "visible": true, "order": 2 },
-        { "id": "mac", "label": "MAC", "unit": "", "visible": true, "order": 3 },
-        { "id": "fio2", "label": "FiO2", "unit": "%", "visible": true, "order": 4 },
-        { "id": "hr", "label": "HR", "unit": "bpm", "visible": true, "order": 5 }
-     ]
-  }
-}
+[
+   { "id": "ecg", "label": "ECG I", "visible": true, "color": "#00ff41", "order": 1 },
+   { "id": "spo2", "label": "SpO2", "visible": true, "color": "#00d0ff", "order": 2 },
+   { "id": "resp", "label": "Resp", "visible": true, "color": "#ffea00", "order": 3 },
+   { "id": "art", "label": "ART", "visible": false, "color": "#ff3b30", "order": 4 }
+]
 ```
 
 **Response Body**:
@@ -250,7 +213,31 @@
 { "code": 200, "message": "success", "data": null }
 ```
 
-### 3.5 更新报警阈值策略
+### 3.5 更新设备参数配置
+**说明**: 更新指定科室下某类设备的参数显示配置（单位、顺序、可见性）。
+**URL**: `/departments/{departmentCode}/device-configs/{deviceType}/parameters`
+**Method**: `PUT`
+**Path Params**: 
+* `departmentCode` (例如: `ICU`)
+* `deviceType` (例如: `MONITOR`, `VENTILATOR`)
+
+**Request Body** (`ParameterConfig[]`):
+```json
+[
+   { "id": "hr", "label": "HR", "unit": "bpm", "visible": true, "order": 1 },
+   { "id": "spo2", "label": "SpO2", "unit": "%", "visible": true, "order": 2 },
+   { "id": "nibp", "label": "NIBP", "unit": "mmHg", "visible": true, "order": 3 },
+   { "id": "resp", "label": "RR", "unit": "rpm", "visible": true, "order": 4 },
+   { "id": "temp", "label": "Temp", "unit": "°C", "visible": true, "order": 5 }
+]
+```
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": null }
+```
+
+### 3.6 更新报警阈值策略
 **说明**: 更新该科室的生理参数报警规则。
 **URL**: `/departments/{departmentCode}/alarm-thresholds`
 **Method**: `PUT`
@@ -315,53 +302,6 @@
   }
 ]
 ```
-
-**Response Body**:
-```json
-{ "code": 200, "message": "success", "data": null }
-```
-
-### 3.6 获取所有科室列表
-**说明**: 获取系统定义的科室列表（Admin视图）。
-**URL**: `/admin/departments`
-**Method**: `GET`
-
-**Response Body**:
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": [
-      { "id": "d1", "code": "ICU", "name": "重症医学科", "capacity": 20 },
-      { "id": "d2", "code": "OR", "name": "手术室", "capacity": 8 },
-      { "id": "d_new_01", "code": "CCU", "name": "心内监护室", "capacity": 16 }
-  ]
-}
-```
-
-### 3.7 新增科室
-**说明**: 创建一个新的监护科室，并初始化默认配置。
-**URL**: `/admin/departments`
-**Method**: `POST`
-
-**Request Body**:
-```json
-{
-  "code": "CCU",
-  "name": "心内监护室",
-  "capacity": 16
-}
-```
-
-**Response Body**:
-```json
-{ "code": 200, "message": "success", "data": { "id": "d_new_123", "code": "CCU" } }
-```
-
-### 3.8 删除科室
-**说明**: 移除一个科室及其所有配置。
-**URL**: `/admin/departments/{code}`
-**Method**: `DELETE`
 
 **Response Body**:
 ```json
@@ -693,4 +633,55 @@
     "activeAlarms": []
   }
 ]
+```
+
+---
+
+## 8. 科室管理 (Admin)
+
+### 8.1 获取所有科室列表
+**说明**: 获取系统定义的科室列表（Admin视图）。
+**URL**: `/admin/departments`
+**Method**: `GET`
+
+**Response Body**:
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+      { "id": "d1", "code": "ICU", "name": "重症医学科", "capacity": 20 },
+      { "id": "d2", "code": "OR", "name": "手术室", "capacity": 8 },
+      { "id": "d_new_01", "code": "CCU", "name": "心内监护室", "capacity": 16 }
+  ]
+}
+```
+
+### 8.2 新增科室
+**说明**: 创建一个新的监护科室，并初始化默认配置。
+**URL**: `/admin/departments`
+**Method**: `POST`
+
+**Request Body**:
+```json
+{
+  "code": "CCU",
+  "name": "心内监护室",
+  "capacity": 16
+}
+```
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": { "id": "d_new_123", "code": "CCU" } }
+```
+
+### 8.3 删除科室
+**说明**: 移除一个科室及其所有配置。
+**URL**: `/admin/departments/{code}`
+**Method**: `DELETE`
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": null }
 ```
