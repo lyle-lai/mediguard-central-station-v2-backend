@@ -75,6 +75,14 @@ public interface DepartmentService extends IService<DepartmentEntity> {
                         com.mediguard.central.dto.CreateDepartmentDTO dto);
 
         /**
+         * 更新科室偏好设置
+         * 
+         * @param departmentCode 科室代码
+         * @param preferences    偏好设置
+         */
+        void updatePreferences(String departmentCode, com.mediguard.central.dto.DepartmentPreferencesDTO preferences);
+
+        /**
          * 删除科室（Admin）
          * 
          * @param code 科室代码

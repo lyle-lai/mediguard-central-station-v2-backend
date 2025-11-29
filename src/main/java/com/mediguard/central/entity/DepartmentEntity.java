@@ -36,6 +36,26 @@ public class DepartmentEntity {
     private Integer capacity;
 
     /**
+     * 是否演示模式
+     */
+    private Boolean isDemoMode;
+
+    /**
+     * 模拟速度（倍数）
+     */
+    private Integer simulationSpeed;
+
+    /**
+     * 夜间模式
+     */
+    private Boolean nightMode;
+
+    /**
+     * 音频启用
+     */
+    private Boolean audioEnabled;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createdAt;

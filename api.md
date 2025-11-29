@@ -252,7 +252,7 @@
     "max": 110,
     "min": 55,
     "delay": 5,
-    "priority": "HIGH",
+    "priority": "CRITICAL",
     "enabled": true
   },
   {
@@ -261,7 +261,7 @@
     "max": 100,
     "min": 92,
     "delay": 10,
-    "priority": "HIGH",
+    "priority": "CRITICAL",
     "enabled": true
   },
   {
@@ -270,7 +270,7 @@
     "max": 30,
     "min": 8,
     "delay": 15,
-    "priority": "MED",
+    "priority": "WARNING",
     "enabled": false
   },
   {
@@ -279,7 +279,7 @@
     "max": 160,
     "min": 90,
     "delay": 5,
-    "priority": "MED",
+    "priority": "WARNING",
     "enabled": true
   },
   {
@@ -288,7 +288,7 @@
     "max": 45,
     "min": 30,
     "delay": 5,
-    "priority": "MED",
+    "priority": "WARNING",
     "enabled": true
   },
   {
@@ -297,7 +297,7 @@
     "max": 40,
     "min": null,
     "delay": 1,
-    "priority": "HIGH",
+    "priority": "CRITICAL",
     "enabled": true
   }
 ]
@@ -307,6 +307,30 @@
 ```json
 { "code": 200, "message": "success", "data": null }
 ```
+
+
+### 3.7 更新科室偏好设置
+**说明**: 更新指定科室的模拟设置、夜间模式及音频开关等偏好。
+**URL**: `/departments/{departmentCode}/preferences`
+**Method**: `PUT`
+**Path Params**: `departmentCode` (例如: `ICU`)
+
+**Request Body**:
+```json
+{
+  "isDemoMode": true,
+  "simulationSpeed": 2,
+  "nightMode": false,
+  "audioEnabled": true
+}
+```
+
+**Response Body**:
+```json
+{ "code": 200, "message": "success", "data": null }
+```
+
+> 注意：`GET /departments/{departmentCode}/config` 接口的响应中也应包含 `preferences` 字段，结构同上。
 
 ---
 

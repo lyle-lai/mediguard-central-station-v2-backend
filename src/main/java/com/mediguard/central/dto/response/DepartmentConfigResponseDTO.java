@@ -31,6 +31,11 @@ public class DepartmentConfigResponseDTO {
      */
     private Map<String, List<AlarmThresholdDTO>> alarmThresholds;
 
+    /**
+     * 科室偏好设置
+     */
+    private com.mediguard.central.dto.DepartmentPreferencesDTO preferences;
+
     @Data
     public static class DeviceConfigDTO {
         private List<WaveformItemDTO> waveforms;

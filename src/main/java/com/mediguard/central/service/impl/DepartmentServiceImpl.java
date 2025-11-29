@@ -115,7 +115,37 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         }).collect(Collectors.toList());
         response.setAlarmThresholds(Map.of(dept.getCode(), thresholdList));
 
+        // 5. 偏好设置
+        com.mediguard.central.dto.DepartmentPreferencesDTO prefs = new com.mediguard.central.dto.DepartmentPreferencesDTO();
+        prefs.setIsDemoMode(dept.getIsDemoMode());
+        prefs.setSimulationSpeed(dept.getSimulationSpeed());
+        prefs.setNightMode(dept.getNightMode());
+        prefs.setAudioEnabled(dept.getAudioEnabled());
+        response.setPreferences(prefs);
+
         return response;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePreferences(String departmentCode,
+            com.mediguard.central.dto.DepartmentPreferencesDTO preferences) {
+        log.info("【科室配置】更新偏好设置，科室={}，参数={}", departmentCode, preferences);
+        DepartmentEntity dept = this.getOne(new LambdaQueryWrapper<DepartmentEntity>()
+                .eq(DepartmentEntity::getCode, departmentCode));
+        if (dept == null)
+            throw new RuntimeException("科室不存在");
+
+        if (preferences.getIsDemoMode() != null)
+            dept.setIsDemoMode(preferences.getIsDemoMode());
+        if (preferences.getSimulationSpeed() != null)
+            dept.setSimulationSpeed(preferences.getSimulationSpeed());
+        if (preferences.getNightMode() != null)
+            dept.setNightMode(preferences.getNightMode());
+        if (preferences.getAudioEnabled() != null)
+            dept.setAudioEnabled(preferences.getAudioEnabled());
+
+        this.updateById(dept);
     }
 
     @Override

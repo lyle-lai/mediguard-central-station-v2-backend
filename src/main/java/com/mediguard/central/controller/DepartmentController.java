@@ -77,4 +77,15 @@ public class DepartmentController {
         departmentService.updateAlarmThresholds(departmentCode, thresholds);
         return Result.success();
     }
+
+    /**
+     * 更新科室偏好设置
+     */
+    @PutMapping("/{departmentCode}/preferences")
+    public Result<Void> updatePreferences(@PathVariable String departmentCode,
+            @RequestBody com.mediguard.central.dto.DepartmentPreferencesDTO preferences) {
+        log.info("【科室配置】接收到更新偏好设置请求，科室={}", departmentCode);
+        departmentService.updatePreferences(departmentCode, preferences);
+        return Result.success();
+    }
 }
