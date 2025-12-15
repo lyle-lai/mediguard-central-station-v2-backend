@@ -14,6 +14,7 @@ import com.mediguard.central.mapper.BedDisplayConfigMapper;
 import com.mediguard.central.mapper.PatientMapper;
 import com.mediguard.central.mapper.VitalSignDataMapper;
 import com.mediguard.central.service.PatientService;
+import com.mediguard.central.service.StompVitalSignsPushService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, PatientEntity
 
     private final VitalSignDataMapper vitalSignDataMapper;
     private final BedDisplayConfigMapper bedDisplayConfigMapper;
+    private final StompVitalSignsPushService pushService;
 
     @Override
     public List<PatientResponseDTO> getAllPatients() {
@@ -80,6 +82,10 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, PatientEntity
 
         this.save(patient);
         log.info("【患者管理】患者入科成功，ID={}", patient.getId());
+
+        // 触发推送服务刷新缓存
+        pushService.forceRefreshCache();
+
         return patient.getId();
     }
 
@@ -92,6 +98,9 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, PatientEntity
             throw new RuntimeException("患者不存在");
 
         this.removeById(patientId);
+
+        // 触发推送服务刷新缓存
+        pushService.forceRefreshCache();
     }
 
     @Override
